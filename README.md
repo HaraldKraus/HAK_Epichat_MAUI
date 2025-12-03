@@ -1,1 +1,2 @@
-# HAK_MAUI_Hybrid_Startertemplate
+# HAK Epichat
+Maui Hybrid mit SupaBase
