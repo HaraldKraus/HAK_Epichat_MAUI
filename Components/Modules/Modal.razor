@@ -1,0 +1,43 @@
+﻿@inject IJSRuntime JS
+
+<!-- Button zum Öffnen -->
+@if (!string.IsNullOrEmpty(OpenButtonText))
+{
+    <button type="button" @onclick="OpenModal">@OpenButtonText</button>
+}
+
+<dialog id="myModal" class="modal" @ref="modalRef">
+    <article>
+        <header>
+            <button aria-label="Close" rel="prev" @onclick="CloseModal"></button>
+            @if (!string.IsNullOrEmpty(Title))
+            {
+                <h4>@Title</h4>
+            }
+        </header>
+        <section>
+            @ChildContent
+        </section>
+    </article>
+</dialog>
+
+@inject IJSRuntime JSRuntime
+
+@code {
+    [Parameter] public string Title { get; set; } = string.Empty;
+    [Parameter] public string OpenButtonText { get; set; } = string.Empty;
+
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    private ElementReference modalRef;
+
+    public async Task OpenModal()
+    {
+        await JSRuntime.InvokeVoidAsync("openModal", modalRef);
+    }
+
+    public async Task CloseModal()
+    {
+        await JSRuntime.InvokeVoidAsync("closeModal", modalRef);
+    }
+}

@@ -1,0 +1,73 @@
+﻿@page "/"
+
+<div class="grid">
+    <div>
+        <article>
+            <h1>Chatte jetzt <br />mit Epichat</h1>
+            <p>Epichat verbindet alle Schüler und Schülerinnen der HAK Mistelbach.</p>
+            <p>Melde dich gleich an um loszulegen oder registriere dich!</p>
+           
+        </article>
+    </div>
+    <div>
+        <article>
+            <EditForm Model="newUser" OnValidSubmit="Login">
+                <DataAnnotationsValidator></DataAnnotationsValidator>
+
+                <fieldset>
+                    <label>
+                        Benutzername
+                        <InputText name="username" @bind-value="newUser.username" />
+                        <ValidationMessage For="() => newUser.username" />
+                    </label>
+                    <label>
+                        Passwort
+                        <InputText name="password" @bind-value="newUser.password" type="password" />
+                        <ValidationMessage For="() => newUser.password" />
+                    </label>
+                </fieldset>
+
+                <button type="submit">Anmelden</button>
+        
+            </EditForm>
+        </article>
+    </div>
+</div>
+
+@if (loginSuccess == false)
+{
+    <div class="grid">
+        <div>
+            <div>
+                <article class="pico-background-red-500" style="text-align:center">
+                    Benutzername oder Passwort falsch.
+                </article>
+            </div>
+        </div>
+    </div>
+}
+
+
+@inject DataService myDataService
+@inject NavigationManager nav
+
+
+@code{
+    
+
+    User newUser = new User{ username = "Harri", password="123456"};
+    bool loginSuccess = true;
+
+    private async Task Login()
+    {
+        this.loginSuccess = await myDataService.LoginUser(newUser);
+
+        if(this.loginSuccess == true)
+        {
+            nav.NavigateTo("Chat");
+        }       
+    }
+
+
+}
+

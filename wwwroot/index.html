@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark">
+    <title>HAK Startertemplate (*PICO.CSS)</title>
+    <base href="/" />
+    <!-- Pico.css -->
+    <link rel="stylesheet" href="css/pico/pico.min.css" />
+    <link rel="stylesheet" href="css/pico/pico.colors.min.css" />
+    <!-- Iconset -->
+    <link href="css/fontawesome/css/fontawesome.css" rel="stylesheet" />
+    <link href="css/fontawesome/css/brands.css" rel="stylesheet" />
+    <link href="css/fontawesome/css/solid.css" rel="stylesheet" />
+    <link href="css/fontawesome/css/sharp-thin.css" rel="stylesheet" />
+    <link href="css/fontawesome/css/sharp-duotone-thin.css" rel="stylesheet" />
+    <!-- Custom Stylesheets -->
+    <link rel="stylesheet" href="css/app.css" />
+    <!-- Von Blazor automatisch erzeugt (nicht entfernen) -->
+    <link rel="stylesheet" href="HAK_MAUI_Hybrid_Startertemplate.styles.css" />
+
+    <link rel="icon" href="data:,">
+</head>
+
+<body>
+
+    <!-- Wichtig für IOS und Android damit die Statusleiste des Gerätes nicht verdeckt wird -->
+    <div class="status-bar-safe-area"></div> 
+
+    <!-- Dieses main elemente ist für PICO.CSS wichtig, es stellt den Hauptcontainer ein -->
+    <!-- container = zentrierter Inhalt, container-fluid = Volle Breite verwenden -->
+    <main class="container-fluid">
+        <!-- Diese DIV (id=app) wird verwendet um den gesamten Inhalt der Seite anzuzeigen -->
+        <!-- Hier kommen werden alle Files von "Components" geladen -->
+        <div id="app">Loading...</div>
+    </main>
+
+    <!-- Dieses DIV wird für C# Fehler verwendet -->
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>    
+
+    <!-- Java Scripts -->
+    <script src="_framework/blazor.webview.js" autostart="false"></script>
+    <!-- Eigene JS Functions -->
+    <script src="javascript/epichat.js"></script>
+</body>
+
+</html>

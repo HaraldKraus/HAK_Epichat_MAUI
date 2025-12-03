@@ -1,0 +1,120 @@
+﻿@page "/Account"
+
+<div class="grid">
+    <div>
+        <article>
+            <header class="pico-background-azure-500"><i class="fa-solid fa-user"></i> Dein Account</header>
+            <strong>Benutzername:</strong> @this.loggedInUser?.username<br/>
+            <strong>Erstellt am:</strong> 
+            @this.loggedInUser?.created_at.ToShortDateString() 
+            @this.loggedInUser?.created_at.ToShortTimeString()
+            <br />
+            <strong>Letzte Anmeldung:</strong> 
+            @this.loggedInUser?.last_login.ToShortDateString() 
+            @this.loggedInUser?.last_login.ToShortTimeString()
+            <br/>
+            <strong>Gesendete Nachrichten:</strong> @this.messageCount
+        </article>
+        
+    </div>
+
+    <div>
+        <article>
+            <header class="pico-background-amber-200"><i class="fa-solid fa-bolt"></i> Aktionen</header>
+            <EditForm Model="loggedInUser" OnValidSubmit="ResetPassword">
+                <DataAnnotationsValidator></DataAnnotationsValidator>
+
+                <fieldset>
+                    <label>
+                        Neues Passwort
+                        <InputText name="password" @bind-value="loggedInUser.password" type="password" />
+                        <ValidationMessage For="() => loggedInUser.password" />
+                    </label>
+                </fieldset>
+
+                <button type="submit">Passwort zurücksetzen</button>
+
+            </EditForm>
+        </article>
+        <article>
+            <header class="pico-background-red-500"><i class="fa-solid fa-radiation"></i> Account löschen</header>
+            <center>
+                <Modal @ref="myModal" Title="Account Löschen" OpenButtonText="Account Löschen">
+                    <p>Willst du wirklich deinen Account und alle deine Nachrichten löschen?</p>
+                    <button class="secondary" @onclick="myModal.CloseModal">Abbrechen</button>
+                    <button class="pico-background-red-500" @onclick="DeleteAccount">Löschen</button>
+                </Modal>
+            </center>
+        </article>
+    </div>
+</div>
+
+@if (userMessage != string.Empty)
+{
+    <div class="grid">
+        <div>
+            <div>
+                <article class="@color" style="text-align:center">
+                    @userMessage
+                </article>
+            </div>
+        </div>
+    </div>
+}
+
+
+
+
+@inject DataService myDataService
+@inject NavigationManager nav
+
+@code {
+    private Modal myModal = default!;
+
+    User loggedInUser = new User();
+    int messageCount = 0;
+
+    string userMessage = string.Empty;
+    string color = "pico-background-red-500";
+
+    protected override async void OnInitialized()
+    {
+        this.loggedInUser = myDataService.LoggedInUser;
+        this.messageCount = await myDataService.GetMessageCountForLoggedinUser();
+    }
+
+    private async void ResetPassword()
+    {
+        bool result = await myDataService.ResetPassword(loggedInUser.password);
+
+        if (result == true)
+        {
+            this.color = "pico-background-jade-500";
+            this.userMessage = "Das Passwort wurde erfolgreich geändert.";
+        }
+        else
+        {
+            this.color = "pico-background-red-500";
+            this.userMessage = "Das Passwort konnte nicht geändert werden.";
+        }
+
+        this.loggedInUser.password = string.Empty;
+        StateHasChanged();
+    }
+
+    private async void DeleteAccount()
+    {
+        this.myModal.CloseModal();
+        bool result = await myDataService.DeleteAccount();
+
+        if (result == true)
+        {
+            nav.NavigateTo("");
+        }
+        else
+        {
+            this.color = "pico-background-red-500";
+            this.userMessage = "Der Account konnte nicht gelöscht werden.";
+        }
+    }
+}

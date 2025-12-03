@@ -1,0 +1,69 @@
+﻿@page "/Register"
+
+<div class="grid">    
+    <div>
+        <article>
+
+        <h1>Bei Epichat<br/>registrieren</h1>
+        <p>Epichat verbindet alle Schüler und Schülerinnen der HAK Mistelbach.</p>
+        <p>Sichere dir jetzt einen Account um loszulegen!</p>
+
+        </article>
+    </div>
+    <div>    
+        <article>
+            <EditForm Model="newUser" OnValidSubmit="RegisterUser">
+                <DataAnnotationsValidator></DataAnnotationsValidator>
+
+                <fieldset>
+                    <label>
+                        Benutzername
+                        <InputText name="username" @bind-value="newUser.username" />
+                        <ValidationMessage For="() => newUser.username" />
+                    </label>
+                    <label>
+                        Passwort
+                        <InputText name="password" @bind-value="newUser.password" type="password" />
+                        <ValidationMessage For="() => newUser.password" />
+                    </label>
+                </fieldset>
+
+                <button type="submit">Registrieren</button>
+                    
+            </EditForm>
+        </article>        
+    </div>   
+</div>
+
+@if(userMessage != string.Empty)
+{
+    <div class="grid">
+        <div>        
+            <div>
+                <article class="@color" style="text-align:center">
+                    @userMessage                        
+                </article>
+            </div>        
+        </div>
+    </div>
+}
+
+@inject DataService myDataService
+
+@code {
+    User newUser = new User();
+
+    string color = string.Empty;
+    string userMessage = string.Empty;
+
+    private async Task RegisterUser()
+    {
+        var result = await myDataService.RegisterUser(newUser);
+
+        color = result.color;
+        userMessage = result.message;
+
+        newUser = new User();
+    }
+}
+

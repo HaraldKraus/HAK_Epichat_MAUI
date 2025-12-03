@@ -1,0 +1,76 @@
+﻿@inherits LayoutComponentBase
+@inject DataService myDataService
+
+@inject NavigationManager NavManager
+@inject IJSRuntime JSRuntime
+@implements IDisposable
+
+@code {
+    protected override void OnInitialized()
+    {
+        // Statischer Titel für die ganze App
+        Application.Current!.Windows.FirstOrDefault().Title = "HAK Epichat";
+        NavManager.LocationChanged += OnLocationChanged;
+    }
+
+    private async void OnLocationChanged(object sender, LocationChangedEventArgs e)
+    {
+        // Kleine Verzögerung, damit Blazor die Navigation fertig rendert
+        await Task.Delay(1);
+        await JSRuntime.InvokeVoidAsync("closePicoDropdowns");
+    }
+
+    public void Dispose()
+    {
+        NavManager.LocationChanged -= OnLocationChanged;
+    }
+}
+
+<nav class="pico-background-slate-900">
+    <ul>
+        <li><strong><i class="fa-solid fa-comments"></i> HAK Epichat</strong></li>
+    </ul>
+    <ul>
+        @if (myDataService.LoggedInUser != null)
+        {
+            <li>
+                <NavLink href="Chat" class="secondary" role="button">
+                    Chat
+                </NavLink>       
+            </li>
+            <li>
+                <details class="dropdown">
+                    <summary>
+                        <i class="fa-solid fa-user"></i> @myDataService.LoggedInUser.username
+                    </summary>
+                    <ul dir="rtl">
+                        <li>
+                            <NavLink href="Account">Account</NavLink>
+                        </li>
+                        <li>
+                            <NavLink href="Logout">Logout</NavLink>
+                        </li>
+                    </ul>
+                </details>                
+            </li>
+        }
+        else
+        {
+            <li>
+                <NavLink href="Register" class="secondary" role="button">
+                    Registrieren
+                </NavLink>           
+            </li>
+        
+            <li>
+                <NavLink href="." role="button" class="secondary" Match="NavLinkMatch.All">
+                    Home
+                </NavLink>           
+            </li>       
+        }
+    </ul>
+</nav>
+
+<div class="mainContent">
+    @Body
+</div>

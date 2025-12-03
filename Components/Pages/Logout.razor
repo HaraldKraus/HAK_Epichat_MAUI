@@ -1,0 +1,14 @@
+﻿@page "/Logout"
+
+<h3>Logout</h3>
+
+@inject DataService myDataService
+@inject NavigationManager nav
+@code {
+
+    protected override async void OnInitialized()
+    {
+        await myDataService.LogoutUser();       
+        nav.NavigateTo("");
+    }
+}

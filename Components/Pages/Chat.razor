@@ -1,0 +1,80 @@
+﻿@page "/Chat"
+
+<div class="chat-container">
+    <!-- 1. Nachrichtenbereich – nimmt den ganzen Platz ein und scrollt -->
+    <div class="messages-scroll" @ref="messagesScrollRef">
+      
+        @foreach (Message message in myMessages)
+        {
+             <div class="message @(message.User.id == this.loggedInUser.id ? "own" : "other")">
+
+                @if (message.User.id != this.loggedInUser.id)
+                {
+                    <div class="username">@message.User.username</div>
+                }
+
+                <div class="bubble">
+                    @message.text
+                </div>
+                <small class="time">@message.created_at.ToLocalTime().ToShortDateString() - @message.created_at.ToLocalTime().ToShortTimeString()</small>
+            </div>
+        }
+      
+    </div>
+
+    <div class="chat-input-grid">
+        <form role="search">
+            <input type="text"
+                   @bind="newMessage.text" 
+                   @bind:event="oninput"
+                   placeholder="Nachricht schreiben..." />
+            <input type="button"
+                   @onclick="SendMessage" 
+                   disabled="@string.IsNullOrWhiteSpace(newMessage.text)"
+                   value="Senden" />
+        </form>
+    </div>
+</div>
+
+@inject IJSRuntime JSRuntime
+@inject DataService myDataService
+
+@code{
+
+    User loggedInUser = null;
+    List<Message> myMessages = new List<Message>();
+    Message newMessage = new Message();
+
+    ElementReference messagesScrollRef;
+
+    // Wird 1 malig beim start der Seite ausgeführt
+    protected override async void OnInitialized()
+    {
+        this.loggedInUser = myDataService.LoggedInUser;
+        this.myMessages = await myDataService.GetMessagesAsync();
+
+        StateHasChanged();
+    }
+
+    // Wird ausgeführt wenn die Seite neu aufgebaut wird 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await ScrollToBottom();        
+    }
+
+    private async Task SendMessage()
+    {
+        myDataService.SendMessage(newMessage);
+        this.newMessage = new Message();
+        this.myMessages = await myDataService.GetMessagesAsync();
+
+        StateHasChanged(); // Löst OnAfterRenderAsync aus
+    }
+
+    [JSInvokable]
+    public async Task ScrollToBottom()
+    {
+        await JSRuntime.InvokeVoidAsync("scrollToBottom", messagesScrollRef);
+    }
+}
+
